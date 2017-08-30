@@ -1,5 +1,5 @@
 <?php
-class TgApi{
+class TgApi {
 	private $baseURL = 'https://api.telegram.org/bot';
 	protected $token;
 	public function __construct($token) {
