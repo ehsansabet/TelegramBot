@@ -7,10 +7,36 @@ class TgApi {
 		if (is_null($this->token)) {
 			throw new \Exception('Required "token" key not supplied');
 		}
+		$this->baseURL = $this->baseURL . $this->token .'/';
 	}
+	/**
+	* Testing your bot's auth token.
+	*
+	* @return Array
+	*/
 	public function getMe() {
 		$message = $this->sendRequest('getMe');
 		return $message;
+	}
+	/**
+	* Set Webhook.
+	*
+	* @param int            $url
+	* @param InputFile      $certificate
+	* @param int         	$max_connections
+	* @param Array        	$allowed_updates
+	*
+	* @return bool
+	*/
+	public function setWebhook($url, $certificate = null, $max_connections = null, $allowed_updates = null) {
+		$params = compact('url', 'certificate', 'max_connections', 'allowed_updates');
+		$message = $this->sendRequest('setWebhook', $params);
+		return $message ? json_decode($message, true)['ok'] : false;
+	}
+	public function getFile($file_id) {
+		$params = compact('file_id');
+		$message = $this->sendRequest('getFile', $params);
+		return $message ? json_decode($message, true)['result']['file_path'] : false;
 	}
 // Send text messages.
 	public function sendMessage($chat_id, $text, $reply_keyboard = null, $inline_keyboard = null) {
@@ -168,8 +194,6 @@ class TgApi {
 	}
 //Send Request.
 	private function sendRequest($method, $params = null, $upload = null) {
-		$this->baseURL = $this->baseURL . $this->token .'/';
-		
 		$curl = curl_init();
 		curl_setopt($curl, CURLOPT_URL, $this->baseURL . $method);
 		curl_setopt($curl, CURLOPT_HEADER, false);
